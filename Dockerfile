@@ -65,3 +65,4 @@ RUN mkdir /tmp/pre-commit-init && \
     git init && \
     pre-commit run -a && \
     rm -rf /tmp/pre-commit-init
+
