@@ -10,7 +10,23 @@ RUN \
     curl \
     wget && \
   rm -rf /var/lib/apt/lists/*
-RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+# Install Helm for both amd64 and arm64
+ENV HELM_VERSION=3.18.4
+RUN set -e; \
+  ARCH=$(uname -m); \
+  if [ "$ARCH" = "x86_64" ]; then \
+    HELM_URL="https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz"; \
+  elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then \
+    HELM_URL="https://get.helm.sh/helm-v${HELM_VERSION}-linux-arm64.tar.gz"; \
+  else \
+    echo "Unsupported architecture: $ARCH" && exit 1; \
+  fi; \
+  wget -O /tmp/helm.tar.gz "${HELM_URL}"; \
+  tar -xzf /tmp/helm.tar.gz -C /tmp; \
+  mv /tmp/linux-*/helm /usr/local/bin/helm; \
+  chmod +x /usr/local/bin/helm; \
+  rm -rf /tmp/helm.tar.gz /tmp/linux-*
 
 # Install mikefarah/yq (Go version) for both amd64 and arm64
 RUN ARCH=$(uname -m) && \
@@ -49,4 +65,3 @@ RUN mkdir /tmp/pre-commit-init && \
     git init && \
     pre-commit run -a && \
     rm -rf /tmp/pre-commit-init
-
