@@ -35,6 +35,13 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # sha- tag lets the GitLab runner pin an exact build; :master is
+          # cached on nodes with the default IfNotPresent pull policy
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=sha
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
