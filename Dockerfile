@@ -1,4 +1,4 @@
-FROM ghcr.io/renovatebot/renovate:44.235.1
+FROM ghcr.io/renovatebot/renovate:44.236.5
 
 USER 0
 RUN \
